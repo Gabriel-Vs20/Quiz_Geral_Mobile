@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,16 +70,7 @@ fun TelaRanking(
                 .padding(16.dp)
         ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Ranking", color = CorCliente, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp)
-                TextButton(onClick = { navController.navigate(Rotas.SOBRE) }) {
-                    Text("Sobre", color = CorCliente, fontWeight = FontWeight.Bold)
-                }
-            }
+            Text("Ranking", color = CorCliente, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp)
 
             Spacer(modifier = Modifier.padding(4.dp))
 
@@ -128,19 +118,6 @@ fun TelaRanking(
             }
 
             Spacer(modifier = Modifier.padding(6.dp))
-
-            Button(
-                onClick = {
-                    navController.navigate(Rotas.QUIZ_CLIENTE) {
-                        popUpTo(Rotas.RANKING) { inclusive = true }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = CorCliente),
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(10.dp)
-            ) { Text("Jogar", fontWeight = FontWeight.ExtraBold) }
-
-            Spacer(modifier = Modifier.padding(4.dp))
 
             OutlinedButton(
                 onClick = {
