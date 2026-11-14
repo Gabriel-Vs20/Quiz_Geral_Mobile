@@ -84,6 +84,19 @@ fun TelaResultadoCliente(
 
             OutlinedButton(
                 onClick = {
+                    navController.navigate(Rotas.RANKING) {
+                        popUpTo(Rotas.RESULTADO_CLIENTE) { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = CorCliente),
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Ver ranking", fontWeight = FontWeight.Bold) }
+
+            Spacer(modifier = Modifier.padding(6.dp))
+
+            OutlinedButton(
+                onClick = {
                     navController.navigate(Rotas.LOGIN_ADM) {
                         popUpTo(Rotas.RESULTADO_CLIENTE) { inclusive = true }
                     }

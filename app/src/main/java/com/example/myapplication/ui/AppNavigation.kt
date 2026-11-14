@@ -43,6 +43,14 @@ fun AppNavigation() {
             )
         }
 
+        composable(Rotas.RANKING) {
+            TelaRanking(navController)
+        }
+
+        composable(Rotas.SOBRE) {
+            TelaSobre(navController)
+        }
+
     }
 
 }
