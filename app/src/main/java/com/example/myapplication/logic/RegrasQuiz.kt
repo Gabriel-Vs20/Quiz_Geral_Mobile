@@ -19,6 +19,14 @@ object RegrasQuiz {
         return indiceEscolhido == pergunta.indiceCorreta
     }
 
+    fun validarNomeJogador(nome: String): String {
+        return when {
+            nome.isBlank() -> "Informe o nome do jogador"
+            nome.length > 20 -> "O nome pode ter no máximo 20 letras"
+            else -> ""
+        }
+    }
+
     fun calcularPorcentagem(acertos: Int, total: Int): Int {
         return if (total > 0) acertos * 100 / total else 0
     }

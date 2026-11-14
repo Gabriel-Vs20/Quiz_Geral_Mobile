@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Pergunta::class, ResultadoFinal::class], version = 2)
+@Database(entities = [Pergunta::class, ResultadoFinal::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun perguntaDAO(): PerguntaDAO
@@ -28,6 +28,16 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Versão 3: resultado passa a ter o nome do jogador (editável no ranking)
+        private val MIGRACAO_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `resultado_final` " +
+                        "ADD COLUMN `nomeJogador` TEXT NOT NULL DEFAULT 'Jogador'"
+                )
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -44,7 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
                         context.applicationContext,
                         AppDatabase::class.java,
                         "quiz_database"
-                    ).addMigrations(MIGRACAO_1_2).build()
+                    ).addMigrations(MIGRACAO_1_2, MIGRACAO_2_3).build()
                     INSTANCE = instance
                     return instance
                 }
