@@ -7,9 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-// Ponte entre os ViewModels e as duas fontes de dados:
-// o Firestore (lista mestra, na nuvem) e o Room (cópia local, funciona offline).
-// Toda falha de nuvem ou de banco é isolada aqui com try-catch.
 class PerguntaRepository(
     private val perguntaDao: PerguntaDAO,
     private val perguntaRemota: PerguntaRemoteDataSource
@@ -31,7 +28,6 @@ class PerguntaRepository(
         }
     }
 
-    // Baixa as perguntas do Firestore e substitui a cópia local do Room
     suspend fun sincronizar(): Boolean {
         return try {
             val perguntas = perguntaRemota.listar()
@@ -55,7 +51,6 @@ class PerguntaRepository(
     suspend fun atualizar(pergunta: Pergunta): Boolean {
         return try {
             if (pergunta.idRemoto.isBlank()) {
-                // Pergunta antiga que só existia no aparelho: cria ela na nuvem
                 val idRemoto = perguntaRemota.inserir(pergunta)
                 perguntaDao.atualizar(pergunta.copy(idRemoto = idRemoto))
             } else {

@@ -24,8 +24,6 @@ class QuizClienteViewModel(
 
     init {
         viewModelScope.launch {
-            // Tenta baixar a versão mais nova do Firestore; se estiver sem internet,
-            // segue com as perguntas que já estão salvas no Room
             perguntaRepository.sincronizar()
             val perguntas = perguntaRepository.listarTodas()
             val erro = when {

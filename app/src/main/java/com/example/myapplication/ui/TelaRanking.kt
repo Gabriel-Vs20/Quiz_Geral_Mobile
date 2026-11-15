@@ -133,7 +133,6 @@ fun TelaRanking(
         }
     }
 
-    // Diálogo de edição (Update) aparece quando há um resultado sendo editado
     if (uiState.editando != null) {
         AlertDialog(
             onDismissRequest = { viewModel.onCancelarEdicao() },

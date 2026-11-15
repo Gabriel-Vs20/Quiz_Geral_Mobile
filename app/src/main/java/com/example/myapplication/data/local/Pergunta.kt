@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class Pergunta(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    // ID do documento no Firestore (vazio = pergunta ainda não enviada para a nuvem)
     val idRemoto: String = "",
     val enunciado: String,
     val alternativaA: String,

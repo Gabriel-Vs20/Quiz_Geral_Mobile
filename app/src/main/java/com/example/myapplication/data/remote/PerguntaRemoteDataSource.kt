@@ -7,9 +7,6 @@ import com.google.firebase.firestore.Source
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 
-// Acesso à coleção "perguntas" do Firebase Firestore.
-// As funções podem lançar exceção (sem internet, tempo esgotado, permissão negada);
-// quem trata é o PerguntaRepository, com try-catch.
 class PerguntaRemoteDataSource(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
@@ -17,12 +14,10 @@ class PerguntaRemoteDataSource(
     private val colecao = firestore.collection("perguntas")
 
     suspend fun listar(): List<Pergunta> {
-        // Source.SERVER obriga a buscar na nuvem (sem internet -> exceção)
         val resultado = withTimeout(TEMPO_LIMITE) { colecao.get(Source.SERVER).await() }
         return resultado.documents.map { paraPergunta(it) }
     }
 
-    // Retorna o ID gerado pelo Firestore para o novo documento
     suspend fun inserir(pergunta: Pergunta): String {
         val documento = withTimeout(TEMPO_LIMITE) { colecao.add(paraMapa(pergunta)).await() }
         return documento.id

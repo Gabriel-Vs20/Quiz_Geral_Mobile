@@ -25,7 +25,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
-// Abas da barra inferior (só existem no modo jogador)
 private data class AbaJogador(val rota: String, val titulo: String, val icone: ImageVector)
 
 private val abasJogador = listOf(
@@ -41,7 +40,6 @@ fun AppNavigation() {
     val entradaAtual by navController.currentBackStackEntryAsState()
     val rotaAtual = entradaAtual?.destination?.route
 
-    // A barra só aparece nas telas do jogador; login e admin ficam sem ela
     val mostrarBarra = abasJogador.any { it.rota == rotaAtual }
 
     Scaffold(
@@ -108,7 +106,6 @@ private fun BarraInferiorJogador(navController: NavHostController, rotaAtual: St
                 onClick = {
                     if (rotaAtual != aba.rota) {
                         navController.navigate(aba.rota) {
-                            // Troca a tela atual pela aba escolhida, sem empilhar telas
                             popUpTo(rotaAtual ?: aba.rota) { inclusive = true }
                             launchSingleTop = true
                         }

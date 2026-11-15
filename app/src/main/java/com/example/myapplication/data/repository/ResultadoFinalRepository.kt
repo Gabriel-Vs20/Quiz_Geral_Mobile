@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.map
 
 class ResultadoFinalRepository(private val resultadoFinalDao: ResultadoFinalDAO) {
 
-    // Se o banco falhar, o Flow emite null em vez de quebrar o app.
-    // O ViewModel transforma esse null em mensagem de erro no UiState.
     fun listarTodos(): Flow<List<ResultadoFinal>?> {
         return resultadoFinalDao.listarTodos()
             .map<List<ResultadoFinal>, List<ResultadoFinal>?> { it }

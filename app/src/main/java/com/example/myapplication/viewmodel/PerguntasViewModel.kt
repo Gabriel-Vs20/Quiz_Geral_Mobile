@@ -25,7 +25,6 @@ class PerguntasViewModel(
             }
         }
 
-        // Lista reativa do Room, em ordem alfabética do enunciado
         viewModelScope.launch {
             perguntaRepository.listarTodasFlow().collect { lista ->
                 if (lista == null) {
@@ -41,7 +40,6 @@ class PerguntasViewModel(
         onSincronizar()
     }
 
-    // Baixa a lista mestra do Firestore para o Room
     fun onSincronizar() {
         _uiState.update { it.copy(sincronizando = true) }
         viewModelScope.launch {
@@ -79,7 +77,6 @@ class PerguntasViewModel(
         _uiState.update { it.copy(indiceCorreta = indice, sucesso = "") }
     }
 
-    // Preenche o formulário com a pergunta escolhida para editar
     fun onEditar(pergunta: Pergunta) {
         _uiState.update {
             it.copy(

@@ -28,7 +28,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // Versão 3: resultado passa a ter o nome do jogador (editável no ranking)
         private val MIGRACAO_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
@@ -38,7 +37,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // Versão 4: pergunta guarda o ID do documento no Firestore
         private val MIGRACAO_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(

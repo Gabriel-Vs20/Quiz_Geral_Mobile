@@ -18,12 +18,9 @@ class RankingViewModel(
     private val _uiState = MutableStateFlow(RankingUiState())
     val uiState: StateFlow<RankingUiState> = _uiState.asStateFlow()
 
-    // Lista completa vinda do banco, antes de filtrar/ordenar
     private var todos: List<ResultadoFinal> = emptyList()
 
     init {
-        // Coleta o Flow do Room: toda vez que um resultado é inserido,
-        // editado ou excluído, este bloco roda de novo sozinho.
         viewModelScope.launch {
             resultadoFinalRepository.listarTodos().collect { lista ->
                 if (lista == null) {
@@ -38,8 +35,6 @@ class RankingViewModel(
         }
     }
 
-    // Regra de negócio da lista: filter (busca por nome), map (calcula a %)
-    // e sortedBy (maior porcentagem primeiro; empate -> mais recente primeiro)
     private fun montarRanking() {
         val busca = _uiState.value.busca.trim()
         val itens = todos

@@ -35,7 +35,6 @@ interface PerguntaDAO {
     @Query("DELETE FROM perguntas")
     suspend fun excluirTodas()
 
-    // Troca o conteúdo local pelo que veio do Firestore numa única transação
     @Transaction
     suspend fun substituirTodas(perguntas: List<Pergunta>) {
         excluirTodas()
