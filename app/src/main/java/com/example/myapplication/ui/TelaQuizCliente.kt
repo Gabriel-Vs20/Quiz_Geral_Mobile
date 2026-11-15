@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.remote.PerguntaRemoteDataSource
 import com.example.myapplication.data.repository.PerguntaRepository
 import com.example.myapplication.data.repository.ResultadoFinalRepository
 import com.example.myapplication.viewmodel.QuizClienteViewModel
@@ -42,7 +43,10 @@ fun TelaQuizCliente(
     navController: NavHostController,
     viewModel: QuizClienteViewModel = viewModel(
         factory = QuizClienteViewModelFactory(
-            PerguntaRepository(AppDatabase.getDatabase(LocalContext.current).perguntaDAO()),
+            PerguntaRepository(
+                AppDatabase.getDatabase(LocalContext.current).perguntaDAO(),
+                PerguntaRemoteDataSource()
+            ),
             ResultadoFinalRepository(AppDatabase.getDatabase(LocalContext.current).resultadoFinalDAO())
         )
     )
@@ -83,6 +87,15 @@ fun TelaQuizCliente(
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(10.dp)
                     ) { Text("Sair", fontWeight = FontWeight.ExtraBold) }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing)
+                        .padding(16.dp)
+                ) {
+                    Text("Carregando perguntas...", fontSize = 15.sp, color = Color(0xFF6B7A74))
                 }
             }
             return@Surface

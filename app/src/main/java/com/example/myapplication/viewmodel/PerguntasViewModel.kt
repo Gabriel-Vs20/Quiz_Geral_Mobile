@@ -24,6 +24,40 @@ class PerguntasViewModel(
                 _uiState.update { it.copy(quantidadeCadastrada = quantidade) }
             }
         }
+
+        // Lista reativa do Room, em ordem alfabética do enunciado
+        viewModelScope.launch {
+            perguntaRepository.listarTodasFlow().collect { lista ->
+                if (lista == null) {
+                    _uiState.update { it.copy(erro = "Não foi possível carregar as perguntas") }
+                } else {
+                    _uiState.update { state ->
+                        state.copy(perguntas = lista.sortedBy { it.enunciado.lowercase() })
+                    }
+                }
+            }
+        }
+
+        onSincronizar()
+    }
+
+    // Baixa a lista mestra do Firestore para o Room
+    fun onSincronizar() {
+        _uiState.update { it.copy(sincronizando = true) }
+        viewModelScope.launch {
+            val sincronizou = perguntaRepository.sincronizar()
+            _uiState.update {
+                if (sincronizou) {
+                    it.copy(sincronizando = false, erro = "")
+                } else {
+                    it.copy(
+                        sincronizando = false,
+                        erro = "Sem conexão com o Firebase. Mostrando as perguntas salvas no aparelho.",
+                        sucesso = ""
+                    )
+                }
+            }
+        }
     }
 
     fun onEnunciadoChange(valor: String) {
@@ -45,6 +79,29 @@ class PerguntasViewModel(
         _uiState.update { it.copy(indiceCorreta = indice, sucesso = "") }
     }
 
+    // Preenche o formulário com a pergunta escolhida para editar
+    fun onEditar(pergunta: Pergunta) {
+        _uiState.update {
+            it.copy(
+                editando = pergunta,
+                enunciado = pergunta.enunciado,
+                alternativas = listOf(
+                    pergunta.alternativaA,
+                    pergunta.alternativaB,
+                    pergunta.alternativaC,
+                    pergunta.alternativaD
+                ),
+                indiceCorreta = pergunta.indiceCorreta,
+                erro = "",
+                sucesso = ""
+            )
+        }
+    }
+
+    fun onCancelarEdicao() {
+        _uiState.update { limparFormulario(it).copy(erro = "", sucesso = "") }
+    }
+
     fun onSalvar() {
         val state = _uiState.value
         val enunciado = state.enunciado.trim()
@@ -57,7 +114,10 @@ class PerguntasViewModel(
             return
         }
 
+        val editando = state.editando
         val pergunta = Pergunta(
+            id = editando?.id ?: 0,
+            idRemoto = editando?.idRemoto ?: "",
             enunciado = enunciado,
             alternativaA = alternativas[0],
             alternativaB = alternativas[1],
@@ -67,21 +127,41 @@ class PerguntasViewModel(
         )
 
         viewModelScope.launch {
-            val salvou = perguntaRepository.inserir(pergunta)
-            if (salvou) {
-                _uiState.update {
-                    it.copy(
-                        enunciado = "",
-                        alternativas = List(4) { "" },
-                        indiceCorreta = null,
-                        erro = "",
-                        sucesso = "Pergunta cadastrada!"
-                    )
-                }
+            val salvou = if (editando == null) {
+                perguntaRepository.inserir(pergunta)
             } else {
-                _uiState.update { it.copy(erro = "Não foi possível salvar a pergunta", sucesso = "") }
+                perguntaRepository.atualizar(pergunta)
+            }
+            if (salvou) {
+                val mensagem = if (editando == null) "Pergunta cadastrada!" else "Pergunta atualizada!"
+                _uiState.update { limparFormulario(it).copy(erro = "", sucesso = mensagem) }
+            } else {
+                _uiState.update {
+                    it.copy(erro = "Não foi possível salvar no Firebase. Verifique a internet.", sucesso = "")
+                }
             }
         }
     }
+
+    fun onExcluir(pergunta: Pergunta) {
+        viewModelScope.launch {
+            val excluiu = perguntaRepository.excluir(pergunta)
+            _uiState.update {
+                if (excluiu) {
+                    val estado = if (it.editando?.id == pergunta.id) limparFormulario(it) else it
+                    estado.copy(erro = "", sucesso = "Pergunta excluída!")
+                } else {
+                    it.copy(erro = "Não foi possível excluir no Firebase. Verifique a internet.", sucesso = "")
+                }
+            }
+        }
+    }
+
+    private fun limparFormulario(state: PerguntasUiState) = state.copy(
+        editando = null,
+        enunciado = "",
+        alternativas = List(4) { "" },
+        indiceCorreta = null
+    )
 
 }

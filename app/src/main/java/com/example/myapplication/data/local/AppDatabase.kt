@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Pergunta::class, ResultadoFinal::class], version = 3)
+@Database(entities = [Pergunta::class, ResultadoFinal::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun perguntaDAO(): PerguntaDAO
@@ -38,6 +38,15 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Versão 4: pergunta guarda o ID do documento no Firestore
+        private val MIGRACAO_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `perguntas` ADD COLUMN `idRemoto` TEXT NOT NULL DEFAULT ''"
+                )
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -54,7 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
                         context.applicationContext,
                         AppDatabase::class.java,
                         "quiz_database"
-                    ).addMigrations(MIGRACAO_1_2, MIGRACAO_2_3).build()
+                    ).addMigrations(MIGRACAO_1_2, MIGRACAO_2_3, MIGRACAO_3_4).build()
                     INSTANCE = instance
                     return instance
                 }
